@@ -120,6 +120,23 @@ module.exports = (function() {
                 }
             });
         });
+    router.route('/login/create')
+        .post(function(req, res) {
+            var user = new User();
+            user.email = req.body.email;
+            user.password = req.body.password;
+            console.log(req.body);
+            //create the user
+            if(user.password!=req.body.confirmPassword){
+                res.json({ status: 'nomatchpassword' });
+            }
+
+            user.save(function(err) {
+                        if (err)
+                            res.send(err);
+                        res.json({ status: 'good' });
+                    });
+        });
 
     return router;
 })();
