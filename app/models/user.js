@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var Parcel = require('./parcel').schema;
+var Ticket = require('./ticket').schema;
 var Schema = mongoose.Schema;
 
 
@@ -11,7 +11,7 @@ var UserSchema   = new Schema({
         unique: true
     },
     password: String,
-    players: [Parcel]
+    tickets: [Ticket]
 });
 
 module.exports = mongoose.model('User', UserSchema);

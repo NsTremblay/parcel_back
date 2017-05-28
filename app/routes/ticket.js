@@ -1,6 +1,8 @@
 var express = require('express');
 var User  = require('../models/user');
+var Ticket  = require('../models/ticket');
 
+exports.googleLink = "http://maps.googleapis.com/maps/api/directions/";
 
 module.exports = (function() {
     'use strict';
@@ -9,19 +11,19 @@ module.exports = (function() {
     // middleware to use for all requests
     router.use(function(req, res, next) {
         // do logging
-        console.log('Something is happening.');
+        console.log('Getting Ticket information');
         next(); // make sure we go to the next routes and don't stop here
     });
 
 
     // on routes that end in /user
     // ----------------------------------------------------
-    router.route('/user')
+    router.route('/ticket')
 
         // create a user (accessed at POST http://localhost:8080/api/user)
         .post(function(req, res) {
 
-            var user = new User();      // create a new instance of the user model
+            var ticket = new User();      // create a new instance of the user model
             user.email = req.body.email;  // set the users email (comes from the request)
             User.findOne({ email: user.email}, function (err, doc){
                 // doc is a Document
@@ -100,44 +102,18 @@ module.exports = (function() {
 
     // on routes that end in /user
     // ----------------------------------------------------
-    router.route('/login')
+    router.route('/ticket/estimate')
         .post(function(req, res) {
-            var user = new User();
-            user.email = req.body.email;
-            user.password = req.body.password;
-            User.findOne({ email: user.email}, function (err, doc){
-                // doc is a Document
-                if(!doc){
-                    res.json({ status: 'wrongusername' });
-                }else{
-                    //check to see if the passwords match
-                    if(doc.password == user.password){
-                        var jsonDoc = doc.toObject();
-                        jsonDoc.status = "good";
-                        res.json(jsonDoc);
-                    }else{
-                        res.json({ status: 'wrongpassword' });
-                    }
-                }
-            });
-        });
-    router.route('/login/create')
-        .post(function(req, res) {
+
+            
             var user = new User();
             user.email = req.body.email;
             user.password = req.body.password;
             console.log(req.body);
-            //create the user
-            if(user.password!=req.body.confirmPassword){
-                res.json({ status: 'nomatchpassword' });
-            }
-
-            user.save(function(err) {
-                        if (err)
-                            res.send(err);
-                        res.json({ status: 'good' });
-                    });
+            //get the estimate from google
+            
         });
+    
 
     return router;
 })();
