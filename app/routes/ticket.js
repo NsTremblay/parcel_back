@@ -1,8 +1,14 @@
 var express = require('express');
+var rp = require('request-promise');
 var User  = require('../models/user');
 var Ticket  = require('../models/ticket');
 
-exports.googleLink = "http://maps.googleapis.com/maps/api/directions/";
+var googleDirectionsLink = "http://maps.googleapis.com/maps/api/directions/";
+
+//TODO: make this a promise
+function getPriceEstimate(req){
+
+}
 
 module.exports = (function() {
     'use strict';
@@ -16,102 +22,38 @@ module.exports = (function() {
     });
 
 
-    // on routes that end in /user
-    // ----------------------------------------------------
-    router.route('/ticket')
-
-        // create a user (accessed at POST http://localhost:8080/api/user)
-        .post(function(req, res) {
-
-            var ticket = new User();      // create a new instance of the user model
-            user.email = req.body.email;  // set the users email (comes from the request)
-            User.findOne({ email: user.email}, function (err, doc){
-                // doc is a Document
-                if(!doc){
-                    // save the user and check for errors
-                    user.save(function(err) {
-                        if (err)
-                            res.send(err);
-                        res.json({ message: 'user created!' });
-                    });
-                }else{
-                    //check to see if the passwords match
-
-                    res.json({ message: 'This user already exists' });
-                }
-            });
-        })
-
-        // get all the users (accessed at GET http://localhost:8080/api/users)
-        .get(function(req, res) {
-            User.find(function(err, users) {
-                if (err)
-                    res.send(err);
-
-                res.json(users);
-            });
-        });
-
-    // on routes that end in /users/:user_id
-    // ----------------------------------------------------
-    router.route('/user/:user_id')
-
-        // get the user with that id (accessed at GET http://localhost:8080/api/users/:user_id)
-        .get(function(req, res) {
-            User.findById(req.params.user_id, function(err, user) {
-                if (err)
-                    res.send(err);
-                res.json(user);
-            });
-        })
-
-        // update the user with this id (accessed at PUT http://localhost:8080/api/users/:user_id)
-        .put(function(req, res) {
-
-            // use our user model to find the user we want
-            User.findById(req.params.user_id, function(err, user) {
-
-                if (err)
-                    res.send(err);
-
-                user.name = req.body.name;  // update the users info
-
-                // save the user
-                user.save(function(err) {
-                    if (err)
-                        res.send(err);
-
-                    res.json({ message: 'user updated!' });
-                });
-
-            });
-        })
-
-        // delete the user with this id (accessed at DELETE http://localhost:8080/api/users/:user_id)
-        .delete(function(req, res) {
-            User.remove({
-                _id: req.params.user_id
-            }, function(err, user) {
-                if (err)
-                    res.send(err);
-
-                res.json({ message: 'Successfully deleted' });
-            });
-        });
-
-
-    // on routes that end in /user
+    // Receive the strings of the from and to addresses and then get the directions
     // ----------------------------------------------------
     router.route('/ticket/estimate')
         .post(function(req, res) {
 
-            
-            var user = new User();
-            user.email = req.body.email;
-            user.password = req.body.password;
-            console.log(req.body);
-            //get the estimate from google
-            
+            var ticket = new Ticket();
+            //Get Directions and the distance for the optimal trip
+            var requestDirections = googleDirectionsLink+"json?origin="+req.body.from_text_address.replace(/\s/g, "+")+"&destination="+req.body.to_text_address.replace(/\s/g, "+");
+        
+            rp(requestDirections)
+            .then(function(googleRoute){
+                var directions = JSON.parse(googleRoute);
+                //get the time per second
+                var duration = directions.routes[0].legs[0].duration.value;
+                //base cost
+                var timeCost = 5;
+                //from 0 to 3600 seconds, increase linearly
+                var percentageOfFirstHour = timeCost/3600;
+                if(percentageOfFirstHour>=1){
+                    timeCost = timeCost+ 3600/500;
+                    timeCost = timeCost+ Math.log10(0.00027775*timeCost)/Math.log10(1.001)*.01+5;
+                }else{
+                    timeCost = timeCost+ duration/500;
+                }
+                
+                //1s is worth 
+                console.log(timeCost);
+                res.json({price:timeCost});
+            }).catch(function (err) {
+                // Crawling failed... 
+                console.log("There was an error"+err);
+            })            
         });
     
 

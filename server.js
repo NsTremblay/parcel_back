@@ -10,7 +10,8 @@ const conf = require('./env');
 var cors = require('cors')
 app.use(cors())
 
-var router = require('./app/routes/user');
+var userRouter = require('./app/routes/user');
+var ticketRouter = require('./app/routes/ticket');
 
 //connect to the mongodb database
 var mongoose   = require('mongoose');
@@ -30,7 +31,8 @@ var port = process.env.PORT || 8080;        // set our port
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
-app.use('/api', router);
+app.use('/api', userRouter);
+app.use('/api', ticketRouter);
 
 // START THE SERVER
 // =============================================================================
