@@ -30,7 +30,7 @@ module.exports = (function() {
             var ticket = new Ticket();
             //Get Directions and the distance for the optimal trip
             var requestDirections = googleDirectionsLink+"json?origin="+req.body.from_text_address.replace(/\s/g, "+")+"&destination="+req.body.to_text_address.replace(/\s/g, "+");
-        
+            requestDirections = unescape(encodeURIComponent(requestDirections));
             rp(requestDirections)
             .then(function(googleRoute){
                 var directions = JSON.parse(googleRoute);
@@ -52,6 +52,7 @@ module.exports = (function() {
                 res.json({price:timeCost});
             }).catch(function (err) {
                 // Crawling failed... 
+                res.json(err)
                 console.log("There was an error"+err);
             })            
         });
