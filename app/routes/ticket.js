@@ -26,10 +26,10 @@ module.exports = (function() {
     // ----------------------------------------------------
     router.route('/ticket/estimate')
         .post(function(req, res) {
-
+            console.log(req.body);
             var ticket = new Ticket();
             //Get Directions and the distance for the optimal trip
-            var requestDirections = googleDirectionsLink+"json?origin="+req.body.from_text_address.replace(/\s/g, "+")+"&destination="+req.body.to_text_address.replace(/\s/g, "+");
+            var requestDirections = googleDirectionsLink+"json?origin="+req.body.from_place.formatted_address.replace(/\s/g, "+")+"&destination="+req.body.to_place.formatted_address.replace(/\s/g, "+");
             requestDirections = unescape(encodeURIComponent(requestDirections));
             rp(requestDirections)
             .then(function(googleRoute){
