@@ -21,6 +21,8 @@ var TicketSchema   = new Schema({
         type:String,
         required:true
     },
+    from_place:Object,
+    to_place:Object
 });
 
 module.exports = mongoose.model('Ticket', TicketSchema);

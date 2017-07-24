@@ -9,8 +9,7 @@ var googleDirectionsLink = "http://maps.googleapis.com/maps/api/directions/";
 function getPriceEstimate(req){
 
 }
-
-module.exports = (function() {
+module.exports.ticket = function(app, passport) {
     'use strict';
     var router = express.Router();
 
@@ -21,11 +20,9 @@ module.exports = (function() {
         next(); // make sure we go to the next routes and don't stop here
     });
 
-
     // Receive the strings of the from and to addresses and then get the directions
     // ----------------------------------------------------
-    router.route('/ticket/estimate')
-        .post(function(req, res) {
+        app.post('/ticket/estimate',passport.authenticate('jwt', { session: false }),function(req, res) {
             console.log(req.body);
             var ticket = new Ticket();
             //Get Directions and the distance for the optimal trip
@@ -57,9 +54,13 @@ module.exports = (function() {
             })            
         });
     
-
+        app.post('/ticket/submit',passport.authenticate('jwt', { session: false }),function(req, res){
+            console.log(req.body);
+            res.json({message:"OK"})
+        })
+    
     return router;
-})();
+};
 
 
 

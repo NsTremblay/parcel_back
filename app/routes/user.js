@@ -34,7 +34,6 @@ module.exports = (function() {
                     });
                 }else{
                     //check to see if the passwords match
-
                     res.json({ message: 'This user already exists' });
                 }
             });
@@ -141,7 +140,3 @@ module.exports = (function() {
 
     return router;
 })();
-
-
-
-
