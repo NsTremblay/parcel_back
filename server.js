@@ -9,13 +9,13 @@ var mongoose     = require('mongoose');
 var passport     = require('passport');
 var morgan       = require('morgan');
 var cors         = require('cors');
-var conf         = require('./env.json');
+var conf         = require('./env.js');
 var bodyParser   = require('body-parser');
 
 app.use(cors());
-
+console.log(process.env.NODE_ENV);
 //connect to the mongodb database
-mongoose.connect(conf.mongoconnection, {
+mongoose.connect(conf.db.development, {
   useMongoClient: true,
 });
 // var db = mongoose.connection;
@@ -40,7 +40,7 @@ require("./app/routes/login.js").login(app, passport);
 require("./app/routes/signup.js").signup(app, passport);
 require("./app/routes/ticket.js").ticket(app, passport);
 
-// START THE SERVER
+// START THE SERVER 
 // =============================================================================
 app.listen(port);
 console.log('Magic happens on port ' + port);
