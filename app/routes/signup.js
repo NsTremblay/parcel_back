@@ -1,9 +1,7 @@
 var User = require('../models/user');
 
-
-'use strict';
 const nodemailer = require('nodemailer');
-
+'use strict';
 // create reusable transporter object using the default SMTP transport
 let transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
